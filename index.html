@@ -1,140 +1,627 @@
-<!DOCTYPE html>
-<html lang="ko">
-
-<head>
-<meta charset="UTF-8">
-<title>이타도리 유지 - 위키</title>
-
+<div>
 <style>
-
-body{
-font-family: Arial, sans-serif;
-background:#ffffff;
-margin:40px;
+/* 위키 스타일 */
+:root {
+    --wiki-main-color: #ffba86; /* 선택한 색상 적용 */
+    --wiki-text-color: #ffffff;
+    --wiki-link-color: #0275d8;
+    --wiki-border-color: #ddd;
+    --wiki-bg-gray: #eee;
+    --wiki-max-width: 700px;
+    --wiki-font-size: 15px;
+    --wiki-line-height: 1.5;
 }
 
-.container{
-max-width:1100px;
-margin:auto;
+#wikiwrap {
+    --wiki-main-color: #ffba86; /* 위키랩 내부 범위 재선언 */
 }
 
-h1{
-font-size:32px;
-border-bottom:3px solid #f58025;
-padding-bottom:10px;
+.wiki-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-h2{
-border-left:5px solid #f58025;
-padding-left:10px;
-margin-top:40px;
+.wiki-main-table {
+    order: 1;
 }
 
-.infobox{
-float:right;
-width:300px;
-border:2px solid #f58025;
-margin:10px;
+.wiki-index {
+    order: 2;
 }
 
-.infobox th{
-background:#f58025;
-color:white;
-padding:6px;
+@media (min-width: 768px) {
+    .wiki-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .wiki-index {
+        order: 1;
+        flex: 0 0 250px;
+        top: 20px;
+    }
+
+    .wiki-main-table {
+        order: 2;
+        flex: 1;
+        min-width: 0;
+    }
 }
 
-.infobox td{
-border:1px solid #ccc;
-padding:6px;
+/* Main wrapper */
+#wikiwrap {
+    font-family: "Pretendard JP Variable", "Pretendard JP", "Pretendard", Pretendard, 
+                 -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", 
+                 "Segoe UI", "Hiragino Sans", "Apple SD Gothic Neo", Meiryo, 
+                 "Noto Sans JP", "Noto Sans KR", "Malgun Gothic", Osaka, 
+                 "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    box-sizing: border-box;
+    font-size: var(--wiki-font-size);
+    line-height: var(--wiki-line-height);
+    max-width: var(--wiki-max-width);
+    margin: 0 auto;
 }
 
-table{
-border-collapse:collapse;
-width:100%;
+#wikiwrap a,
+.text1 a,
+.wiki-category a,
+.wiki-index a {
+    color: var(--wiki-link-color) !important;
+    text-decoration: none;
 }
 
-.toc{
-border:1px solid #ccc;
-width:250px;
-padding:10px;
-background:#f9f9f9;
+#wikiwrap a::before,
+#wikiwrap a::after,
+.text1 a::before,
+.wiki-category a::before,
+.wiki-index a::before {
+    content: none !important;
 }
 
-.toc a{
-text-decoration:none;
-color:#0645ad;
+/* 메인 테이블 */
+.wiki-main-table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 2px solid var(--wiki-main-color);
+    font-size: 0.96em;
+    line-height: var(--wiki-line-height);
+    margin: 20px 0 16px;
 }
 
-.toc a:hover{
-text-decoration:underline;
+.wt-name {
+    padding: 5px 10px;
+    border: 2px solid var(--wiki-main-color);
+    text-align: center;
+    background-color: var(--wiki-main-color);
+    color: var(--wiki-text-color);
 }
 
+.wt-copyright {
+    padding: 5px 10px;
+    border: 1px solid var(--wiki-border-color);
+    text-align: center;
+    color: #000;
+}
+
+.wt-color {
+    width: 30%;
+    padding: 5px 10px;
+    border: 1px solid var(--wiki-border-color);
+    border-right: 1px solid var(--wiki-border-color);
+    border-bottom: 1px solid var(--wiki-border-color);
+    text-align: center;
+    background-color: var(--wiki-main-color);
+    color: var(--wiki-text-color);
+}
+
+.wt-detail {
+    padding: 5px 10px;
+    border: 1px solid var(--wiki-border-color);
+    border-bottom: 1px solid var(--wiki-border-color);
+    text-align: left;
+    color: #000;
+}
+
+.wiki-main-table tr:last-child > td {
+    border-bottom: none;
+}
+
+/* 접기 펼치기 */
+summary {
+    list-style-type: none;
+    opacity: 0.5;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+details[open] summary {
+    opacity: 1;
+}
+
+.wiki-h1-icon ion-icon,
+.wiki-h2-icon ion-icon,
+.wiki-h3-icon ion-icon {
+    transition: transform 0.3s ease;
+    transform: rotate(-90deg);
+}
+
+details[open] .wiki-h1-icon ion-icon,
+details[open] .wiki-h2-icon ion-icon,
+details[open] .wiki-h3-icon ion-icon {
+    transform: rotate(0deg);
+}
+
+/* 본문 폰트 */
+.text1 {
+    font-size: var(--wiki-font-size);
+    line-height: var(--wiki-line-height);
+}
+
+/* 카테고리 */
+.wiki-category {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: normal;
+    line-height: var(--wiki-line-height);
+    margin: 0 0 1em;
+    padding: 0.2rem 0.5rem;
+}
+
+/* 제목 스타일 */
+.wiki-h1 {
+    font-size: 1.8em;
+    border-bottom: 1px solid #ccc;
+    margin: 1.2em 0 0.7em;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.wiki-h2 {
+    font-size: 1.6em;
+    border-bottom: 1px solid #ccc;
+    margin: 1.2em 0 0.7em;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.wiki-h3 {
+    font-size: 1.4em;
+    border-bottom: 1px solid #ccc;
+    margin: 1.2em 0 0.7em;
+    padding-bottom: 5px;
+    font-weight: bold;
+}
+
+.wiki-h1-icon,
+.wiki-h2-icon,
+.wiki-h3-icon {
+    color: #666;
+    float: left;
+    font-weight: 400;
+    line-height: 1em;
+    text-align: center;
+    width: 0.9em;
+    margin-right: 0.4em;
+    margin-top: 0.2em;
+}
+
+
+/* 목차 */
+.wiki-index {
+    border-collapse: collapse;
+    width: auto;
+    max-width: 250px;
+    border: 1px solid #ccc;
+    margin: 0 0 20px 5px;
+    line-height: 1.8;
+}
+
+/* 인용 */
+.wiki-quote {
+    border-collapse: collapse;
+    width: auto;
+    height: auto;
+    margin: 1em 0;
+}
+
+.wiki-quote td {
+    width: 100%;
+    border: 2px dashed #ccc;
+    border-left: 5px solid var(--wiki-main-color);
+    background: var(--wiki-bg-gray);
+    padding: 1em;
+    line-height: 1.6;
+}
+
+.wiki-quote hr {
+    border: 0;
+    border-top: 1px solid #ccc;
+    margin: 0.5em 0;
+}
+
+.wiki-footnote {
+    border-top: 1px solid #777;
+    margin: 1.5em 0;
+    padding: 0.5em 0;
+    font-size: 0.9em;
+}
+.wiki-footnote p {
+    margin: 5px 0;
+}
+
+/* 출처 */
+.wikigreenicon {
+    background: green;
+    color: white;
+    padding: 0 0.08em;
+    font-size: var(--wiki-font-size);
+    vertical-align: middle;
+}
+
+.wikigreentext {
+    color: green;
+    vertical-align: middle;
+    font-size: var(--wiki-font-size);
+    line-height: var(--wiki-line-height);
+}
+
+.wikigreen:hover {
+    text-decoration: underline;
+    text-decoration-color: green;
+}
+
+/* 이미지 및 유튜브 영상 공통 스타일 */
+.wiki-img-sing {
+    width: 100%;
+    margin: 1em 0;
+    border-collapse: collapse;
+    line-height: 0;
+}
+
+.wiki-img-sing td {
+    padding: 0;
+    border: 2px solid var(--wiki-main-color);
+}
+
+/* 이미지 스타일 */
+.wiki-img-sing img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* 유튜브 영상 스타일 */
+.wiki-img-sing iframe {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+    box-shadow: none;
+}
+/* 유튜브 영상 모서리 강제 제거 */
+.wiki-img-sing iframe[src*="youtube.com"] {
+    border-radius: 0 !important;
+}
 </style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>이타도리 유지</h1>
-
-<table class="infobox">
-
+</div>
+<div id="wikiwrap">
+<p class="wiki-category" data-ke-size="size16">분류: <a href="https://namu.wiki/w/%EB%B6%84%EB%A5%98:%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84/%EB%93%B1%EC%9E%A5%EC%9D%B8%EB%AC%BC" target="_blank" rel="noopener">주술회전/등장인물</a></p>
+<div class="wiki-container">
+<table class="wiki-main-table" data-ke-align="alignLeft">
+<tbody>
 <tr>
-<th colspan="2">이타도리 유지</th>
+<td class="wt-name" colspan="2"><b><span style="font-size: 20px;">와카우라 하루카<a name="돌아가기1"></a><a title="한국 이름은 임가화(任歌和 [노래 가 화할 화], Im Gahwa). 일본 이름의 성은 아버지의 성을 따랐다." href="#각주1"><sup>[1]</sup></a></span></b><br /><b><span style="font-size: 13px; line-height: 180%;"><ruby>和歌浦<rt>わかうら</rt></ruby>　<ruby>遙<rt>はるか</rt></ruby> ｜ Haruka Wakaura</span></b></td>
 </tr>
-
 <tr>
-<td>일본어</td>
-<td>虎杖 悠仁</td>
+<td style="padding: 0; border: 2px solid var(--wiki-main-color); border-bottom: var(--wiki-border-color);" colspan="2">
+<div style="text-align: center;"><img style="display: block;" src="이미지 준비중" width="100%" /></div>
+</td>
 </tr>
-
 <tr>
-<td>소속</td>
-<td>도쿄 도립 주술 고등전문학교</td>
+<td class="wt-copyright" colspan="2">&copy;</td>
 </tr>
-
 <tr>
-<td>능력</td>
-<td>스쿠나의 그릇</td>
+<td class="wt-color">출생</td>
+<td class="wt-detail">2002년 6월 9일<br />대한민국 충청남도</td>
 </tr>
-
+<tr>
+<td class="wt-color">연령</td>
+<td class="wt-detail">15세</td>
+</tr>
+<tr>
+<td class="wt-color">신체</td>
+<td class="wt-detail">167cm, 58kg</td>
+</tr>
+<tr>
+<td class="wt-color">소속</td>
+<td class="wt-detail">스기사와 제3 고등학교<br />&rarr; 도쿄 도립 <a href="https://namu.wiki/w/%EC%A3%BC%EC%88%A0%20%EA%B3%A0%EB%93%B1%EC%A0%84%EB%AC%B8%ED%95%99%EA%B5%90" target="_blank" rel="noopener">주술 고등전문학교</a></td>
+</tr>
+<tr>
+<td class="wt-color">취미</td>
+<td class="wt-detail">쇼핑, 카페, 전시회<a name="돌아가기2"></a><a title="돌아다니는 것을 좋아한다. (여행은 외)" href="#각주2"><sup>[2]</sup></a></td>
+</tr>
+<tr>
+<td class="wt-color">좋아하는 음식</td>
+<td class="wt-detail">아이스티 샷추가, 디저트</td>
+</tr>
+<tr>
+<td class="wt-color">싫어하는 음식</td>
+<td class="wt-detail">채소<a name="돌아가기3"></a><a title="편식이 심하다." href="#각주3"><sup>[3]</sup></a></td>
+</tr>
+<tr>
+<td class="wt-color">좋아하는 타</td>
+<td class="wt-detail">친절한 사람</td>
+</tr>
+<tr>
+<td class="wt-color">요즘 고민</td>
+<td class="wt-detail">이타도리에게 좋아한다는 마음을 표현해도 될까?</td>
+</tr>
+<tr>
+<td class="wt-color">고전 입학 방법</td>
+<td class="wt-detail">스카우트</td>
+</tr>
+<tr>
+<td class="wt-color">등급</td>
+<td class="wt-detail">준 3급 &rarr; 2급</td>
+</tr>
+<tr>
+<td class="wt-color">술식</td>
+<td class="wt-detail">공간 무효화</td>
+</tr>
+</tbody>
 </table>
-
-<div class="toc">
-
-<b>목차</b>
-
-<ol>
-<li><a href="#s1">개요</a></li>
-<li><a href="#s2">능력</a></li>
-<li><a href="#s3">작중 행적</a></li>
-</ol>
-
+<table class="wiki-index" data-ke-align="alignLeft">
+<tbody>
+<tr style="padding: 0 20px;">
+<td style="width: 100%; margin-left: 5px; padding: 12px 20px 18px 20px; font-size: .95rem; line-height: 1.5;"><a name="목차"></a><span style="font-size: 1.25em; margin-left: -5px;">목차</span><br /><a style="padding-left: 0px;" href="#목차1-">1.</a> 개요<br /><a style="padding-left: 0px;" href="#목차2-">2.</a> 성격<br /><a style="padding-left: 0px;" href="#목차3-">3.</a> 작중 행적<br /><a style="padding-left: 20px;" href="#목차3-1">3.1</a> 과거<br /><a style="padding-left: 20px;" href="#목차3-2">3.2</a> 도입부<br /><a style="padding-left: 20px;" href="#목차3-3">3.3</a> 주태대천<br /><a style="padding-left: 20px;" href="#목차3-4">3.4</a> 교토 자매 학교 교류회<br /><a style="padding-left: 20px;" href="#목차3-5">3.5</a> 기수뇌동<br /><a style="padding-left: 20px;" href="#목차3-6">3.6</a> 시부야 사변<br /><a style="padding-left: 40px;" href="#목차3-6-1">3.6.1</a> 전생<br /><a style="padding-left: 20px;" href="#목차3-7">3.7</a> 사멸회유<br /><a style="padding-left: 0px;" href="#목차4-">4.</a> 능력과 기술<br /><a style="padding-left: 20px;" href="#목차4-1">4.1</a> 체술<br /><a style="padding-left: 20px;" href="#목차4-2">4.2</a> 기술<br /><a style="padding-left: 20px;" href="#목차4-3">4.3</a> 보유술식<br /><a style="padding-left: 40px;" href="#목차4-3-1">4.3.1</a> 공간 무효화<br /><a style="padding-left: 40px;" href="#목차4-3-2">4.3.2</a> 영역 전개<br /><a style="padding-left: 20px;" href="#목차4-4">4.4</a> 전적<br /><a style="padding-left: 0px;" href="#목차5-">5.</a> 여담</td>
+</tr>
+</tbody>
+</table>
 </div>
-
-<h2 id="s1">1. 개요</h2>
-
-<p>
-이타도리 유지는 주술회전에 등장하는 주인공이다.
-</p>
-
-<h2 id="s2">2. 능력</h2>
-
-<ul>
-<li>강한 신체 능력</li>
-<li>스쿠나의 그릇</li>
-<li>흑섬</li>
+<details open="">
+<h2 class="wiki-h1" data-ke-size="size26"><span class="wiki-h1-icon"></span> <a name="목차1-"></a><a href="#목차">1.</a> 개요</h2>
+<p class="text1" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">만화 주술회전의 등장인물. 한국에서 일본으로 전학 왔다. 전학 첫날 자신을 도와준 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%9D%B4%ED%83%80%EB%8F%84%EB%A6%AC%20%EC%9C%A0%EC%A7%80"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이타도리 유지</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">에게 반하게 되고, 이후 이타도리를 따라 오컬트부에 가입하거나 등하교를 함께하는 등, 그를 따라다닌다. 이타도리에게 할아버지의 부고 소식을 듣고 병원에 갔다가, 그곳에서 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%ED%9B%84%EC%8B%9C%EA%B5%AC%EB%A1%9C%20%EB%A9%94%EA%B5%AC%EB%AF%B8"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">후시구로 메구미</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">로부터 학교 선배들이 위험에 처했다는 이야기를 듣고 둘과 함께 학교로 달려간다. 이후 선배들을 구한 이타도리와 합류하던 중 갑자기 튀어나온 주령에게 습격당해 죽을 뻔하지만, 술식을 발현해 위기를 넘기고 주술고전에 입학하게 된다. 이미지 컬러는 살구색.</span></span></p>
+</details>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">아하하, 진심이야?</span></span></td>
+</tr>
+</tbody>
+</table>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">오컬트부 활동 중 분신사바를 하던 도중, 이타도리가 학생회장보다 조금 더 나은 생물을 가르쳐 달라는 질문을 하자 화들짝 놀라는 모습을 보이며, 학생회장이 들어왔을 때는 눈을 피하고 속으로 사과하는 리액션을 보인다. 후시구로의 설명을 듣던 중 이타도리가 의자에 걸터누우자, 일어나야 하지 않을까 하며 눈치를 보는 장면도 있어, 다른 캐릭터들에 비해 비교적 예의 바른 성격을 가진 것으로 묘사된다. </span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #999999; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; text-decoration-line: line-through; text-decoration-skip-ink: none; vertical-align: baseline; white-space-collapse: preserve;">다만 어디까지나 &lsquo;비교적&rsquo;일 뿐이며, 와카우라 또한 아주 예의 바른 편은 아니다.</span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 처음 보는 사람에게는 고개를 숙이거나 존댓말을 사용하는 등, 겉으로 드러나는 태도는 공손한 편이라 더 그렇게 보인다.</span></p>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">행동에 앞서 상대방이나 주변 사람의 의사를 먼저 확인하는 경향이 있으며, 배려심이 깊은 면모를 보이기도 한다. 오컬트부 선배들의 병문안 당시 사사키가 눈물을 흘리자 곧바로 휴지를 찾아 건네거나, 주변 인물들의 말을 주의 깊게 듣고 기억해두었다가 활용하는 장면도 나온다. 다만 가끔은 이 배려가 지나쳐 우유부단하게 보이기도 한다.</span></p>
+<p class="text1" data-ke-size="size16"><span><br /><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">화가 났을 때는 평소와는 180도 다른 모습을 보인다. 상대에게 눈치를 주거나 얼굴을 찡그리는 등 노골적으로 불쾌함을 드러내며, 험담 중에는 욕설을 서슴지 않는 편이다.<a name="돌아가기4"></a><a title="&lt;span id=&quot;docs-internal-guid-9b64fc1e-7fff-3e9f-ad3a-0d55a29e185a&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;대화하며 험담하기보다는 혼자 중얼거리며 욕하는 것에 가깝다.&lt;/span&gt;&lt;/span&gt;" href="#각주4"><sup>[4]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 물론 중간에 이성을 찾고 스스로 사과하는 경우도 종종 있다. 자주 화를 내는 편은 아니지만, 한 번 화가 나면 불같이 터뜨리는 타입.</span></span></p>
+<details open="">
+<h2 class="wiki-h1" data-ke-size="size26"><span class="wiki-h1-icon"></span> <a name="목차3-"></a><a href="#목차">3.</a> 작중 행적</h2>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-1"></a><a href="#목차">3.1</a> 과거</h2>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">아버지와 어머니를 포함한 가족 대부분이 주술과 관련되어 있다. 와카우라의 할머니는 &lsquo;운명이란 것은 쉽게 거스를 수 없는 것&rsquo;이라고 말하며 어떤 방식으로든 다시 돌아오게 될 수밖에 없을 것이라고 말했다.<a name="돌아가기5"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;할머니의 말이 일종의 저주가 된 셈이다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주5"><sup>[5]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 하지만 와카우라 만큼은 평범하게 살기를 바랐던 어머니의 의견으로 가족들과의 연을 끊고&nbsp; 주술을 멀리하며 지내왔다.&nbsp; 때문에 와카우라는 일본에 가기 전까지 단 한 번도 주술에 관련된 것에는 직접 마주해 본 적이 없다.</span></p>
+<p class="text1" data-ke-size="size16"><span><br /><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">아버지의 일로 한동안 일본에서 살게 되었는데, 일본에서의 생활이 잘 맞아 고등학교는 일본에서 졸업하기로 하였다.<a name="돌아가기6"></a><a title="&lt;span id=&quot;docs-internal-guid-01770408-7fff-cd03-f44b-bbe03760ffe4&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;어머니의 반대가 제일 심해서 3일 밤낮을 설득한 후에야 허락받을 수 있었다.&lt;/span&gt;&lt;/span&gt;" href="#각주6"><sup>[6]</sup></a><a name="돌아가기7"></a><a title="&lt;span id=&quot;docs-internal-guid-25c9bf3c-7fff-ff79-ba40-566a74ffc75a&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;어머니는 공앙에 돌아가기 직전까지도 함께 한국에 돌아갈 것을 권유했다.&lt;/span&gt;&lt;/span&gt;" href="#각주7"><sup>[7]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> </span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">친척의 집에서 머물며 전학을 준비한 곳이 </span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: #ffffff; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">미야기현 스기사와 제3고등학교</span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-2"></a><a href="#목차">3.2</a> 도입부</h2>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">전학 이후 이타도리를 따라 오컬트부에 가입<a name="돌아가기8"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;겁이 많아 한동안 동아리 활동을 할 때는 돌처럼 뚝딱거릴 때가 많았다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주8"><sup>[8]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">하거나 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84/%EB%93%B1%EC%9E%A5%EC%9D%B8%EB%AC%BC#s-9.1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이타도리 와스케</span></a><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">의 병문안을 함께 가는<a name="돌아가기9"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;일찍 하교하는 이유를 물었다가 함께 하게 되었다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주9"><sup>[9]</sup></a><a name="돌아가기10"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;처음 와스케의 병문안을 갔을 때는 무섭다고 생각했지만 찾아갈수록 다정한 사람이라는 것을 알게 되었다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주10"><sup>[10]</sup></a> </span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">등 이타도리와 급속도로 친해졌다. 와스케의 부고 소식에 이타도리를 돕던 중, 후시구로를 만난다. 둘을 찾아 합류하다 주령을 마주하게 되고 죽음에 대한 공포가 술식 발현으로 이어졌다. 스쿠나로 변한 이타도리에게 이질감을 느끼면서도 지키기 위해 후시구로나</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EA%B3%A0%EC%A3%A0%20%EC%82%AC%ED%86%A0%EB%A3%A8"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">고죠 사토루</span></a><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">를 막아서는 모습을 보이며 이타도리와 함께 갈 수 있다는 말에 스카우트 제안을 받아들인다. 그렇게 와스케의 장례식과 오컬트부 선배들에게 인사를 마치고 도쿄로 올라와 주술 고등전문학교로 전학을 온다.</span></p>
+<p class="text1" data-ke-size="size16"><span><br /><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">또 다른 1학년 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%BF%A0%EA%B8%B0%EC%82%AC%ED%82%A4%20%EB%85%B8%EB%B0%94%EB%9D%BC"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">쿠기사키 노바라</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">와 만나게 되고 그녀의 이타도리와 후시구로를 향한 험담아닌 험담을 들으며 어색하게 웃어 보인다.<a name="돌아가기11"></a><a title="&lt;span id=&quot;docs-internal-guid-ddc7b15d-7fff-0d82-3ff1-a6a977dcc1a1&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;이날 주술고전으로 돌아와 이타도리를 좋아하고 있다는 것을 쿠기사키에게 말한다.&lt;/span&gt;&lt;/span&gt;" href="#각주11"><sup>[11]</sup></a><a name="돌아가기12"></a><a title="&lt;span id=&quot;docs-internal-guid-514cf0c5-7fff-4666-c554-2efca709805a&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;후시구로는 이미 눈치채고 있었다.&lt;/span&gt;&lt;/span&gt;" href="#각주12"><sup>[12]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 이후 정식으로 주술고전 도쿄고 1학년이 됨으로써 이타도리, 후시구로, 쿠기사키와 같은 반 동기가 된다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-3"></a><a href="#목차">3.3</a> 주태대천</h2>
+<p class="text1" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이타도리, 후시구로, 쿠기사키와 함께 소년원 임무에 참가하지만, 술식으로 인해 교도소 내부 생득영역에서 튕겨져 나온다. 무언가 이상함을 느끼고는 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%A3%BC%EC%88%A0%20%EA%B3%A0%EB%93%B1%EC%A0%84%EB%AC%B8%ED%95%99%EA%B5%90#s-4.1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이지치 키오타카</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">에게 달려가 혹시 모를 상황에 대한 준비를 부탁하며 친구들을 기다린다. 상황을 전해 듣고는 후시구로와 함께 이타도리를 기다린다. </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EB%A3%8C%EB%A9%98%EC%8A%A4%EC%BF%A0%EB%82%98(%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84)"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">료멘 스쿠나</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">와 싸우는 후시구로를 서포트하지만 스쿠나의 공격에 이타도리의 심장을 껴안고<a name="돌아가기13"></a><a title="애니메이&lt;span id=&quot;docs-internal-guid-37f65ca9-7fff-7358-26e6-e65bb2b2737d&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;에서는 이타도리와 스쿠나가 교차하며 나타났다 사라진다.&lt;/span&gt;&lt;/span&gt;" href="#각주13"><sup>[13]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 기절한다. 임무가 끝나고 치료라는 명목으로 한동안 밖을 나가지 않았지만 후시구로, 쿠기사키에게 함께 교류회에 참여하자는 제안을 받고 이타도리를 향한 자신의 마음에 대해 다시 한번 생각해 보며 훈련에 들어간다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-4"></a><a href="#목차">3.4</a> 교토 자매 학교 교류회</h2>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">교류회를 준비하며 선배인 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%A0%A0%EC%9D%B8%20%EB%A7%88%ED%82%A4"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">젠인 마키</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">, </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%9D%B4%EB%88%84%EB%A7%88%ED%82%A4%20%ED%86%A0%EA%B2%8C"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이누마키 토게</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">, </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%ED%8C%90%EB%8B%A4(%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84)"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">판다</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">에게 훈련을 받는다. 마키의 심부름 중, 교류회에 참여하기 위해 도쿄고에 온 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%ED%86%A0%EB%8F%84%20%EC%95%84%EC%98%A4%EC%9D%B4"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">토도 아오이</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">와 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%A0%A0%EC%9D%B8%20%EB%A7%88%EC%9D%B4"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">젠인 마이</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">를 조우한다. 마이의 도발에 쿠기사키를 말리다가 본인 또한 도발에 넘어가 싸우려 했지만, 이누마키와 판다, 마키의 중재에 악감정만을 남긴 채 물러난다.</span></p>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">짐을 싸는 쿠기사키에게 교류회는 도쿄에서 진행된다고 말해주며 절망하는 쿠키사키를 토닥인다. 이후 이타도리의 생존 서프라이즈에 눈물 참으며 이타도리를 피한다. 자신을 따라온 이타도리의 앞에서 눈물을 흘리며 화를 내지만 사과하는 이타도리를 안아주며 화해한다. 분이 풀리지 않은 쿠기사키가 이타도리에게 영정사진 틀을 들고 있게 하자 어색하게 웃으면서도 동조한다.<a name="돌아가기14"></a><a title="쿠기사키에게 &lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;너무하다며 자신을 보는 이타도리에게 &lsquo;그만하려고?&rsquo;라 물으며 싸하게 미소 짓는다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;" href="#각주14"><sup>[14]</sup></a></span></p>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">교토고에서 이타도리를 죽이려 한다는 것을 알고 이타도리를 서포트하기 위해 돌아가려고 했지만 후시구로의 말을 듣고 주령사냥을 이어간다. 이후 이누마키에게 합류하여 빠르게 주령의 수를 줄여나가던 중 특급 주령 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%ED%95%98%EB%82%98%EB%AF%B8(%EC%A3%BC%EC%88%A0%ED%9A%8C%EC%A0%84)"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">하나미</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">와 마주친다. 이후 토도와 이타도리 페어와 교대하기 전까지 계속 하나미를 바라보며 추회를 사용한다.</span></p>
+<p class="text1" data-ke-size="size16"><span><br /><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">후시구로에게 술식을 사용하여 저주의 씨앗 제거에 도움을 준다.<a name="돌아가기15"></a><a title="&lt;span id=&quot;docs-internal-guid-de88057b-7fff-635f-6e28-4b264e10f3aa&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;혹시나 하는 마음으로 추회를 사용했던 것이 도움이 되었다.&lt;/span&gt;&lt;/span&gt;" href="#각주15"><sup>[15]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 야구로 종목이 변경되어 재개된 교류회에서 벤치 멤버{</span>{<span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">구기 종목은 자신 없다고 한다.</span></span>}}<span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">로 다른 사람들을 응원하며 무사히 교류회를 끝낸다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-5"></a><a href="#목차">3.5</a> 기수뇌동</h2>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이타도리, 후시구로, 노바라 및 보조로서 동행한 </span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%A3%BC%EC%88%A0%20%EA%B3%A0%EB%93%B1%EC%A0%84%EB%AC%B8%ED%95%99%EA%B5%90#s-4.7"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">닛타 아카리</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">와 오피스텔에서 벌어진 주살 사건을 조사하다 저주의 근원지인 야소하치 다리에 도착한다. 예상대로 결계 안으로는 들어가지 못해 밖에서 친구들을 기다린다. 후시구로가 만싱창이의 상태로 기절하자 이타도리와 쿠기사키가 무사하길 바라며 후시구로의 곁을 지킨다. 자신의 술식에 대해 제대로 아는 것이 없다는 생각에 주술고전에 본인이 방해되는 것은 아닌지 고민한다.</span></p>
+<p class="text1" data-ke-size="size16"><span><br /><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">임무가 끝나고 이타도리와 함께 빠칭코에 있던 중 쿠기사키의 문자<a name="돌아가기16"></a><a title="&lt;span id=&quot;docs-internal-guid-c4d1c87c-7fff-cdd1-3158-9a5fcb40a668&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;&lsquo;마음 단단히 먹어야 해, 어찌 되든 나는 하루카 편이니까!&rsquo;&lt;/span&gt;&lt;/span&gt;" href="#각주16"><sup>[16]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">에 의문을 가지며 패밀리 레스토랑으로 간다. 주술고전으로 돌아와 쿠기사키에게 자초지종을 들은 이후 방으로 돌아가며 이타도리를 향한 마음을 더 키워나간다.</span></span></p>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이러면, 더 좋아할 수밖에 없잖아&hellip;.</span></span></td>
+</tr>
+</tbody>
+</table>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-6"></a><a href="#목차">3.6</a> 시부야 사변</h2>
+<p class="text1" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">시부야 사변에서는</span><a style="text-decoration-line: none;" draggable="false" href="https://namu.wiki/w/%EC%BF%A0%EC%82%AC%EC%B9%B4%EB%B2%A0%20%EC%95%84%EC%B8%A0%EC%95%BC"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #1155cc; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> </span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">쿠사카베 아츠야</span></a><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">, 판다와 함께 투입되었다. 장막에 들어가기 전 이타도리에게 직접 만든 부적을 준다.<a name="돌아가기17"></a><a title="이타도리에게는 가벼운 길운이 담긴 부적이라고 했지만 사실은 이타도리의 위치를 빠르게 찾기 위해 자신의 주력을 담아둔 부적이었다." href="#각주17"><sup>[17]</sup></a> 주저사들을 상대하던 도중, 주령 세츠나 코오의 생득영역으로 끌려간다. 세츠나가 과거를 바꿔꿨기 때문에 자신이 주술사가 되었고 자신의 전생과 스쿠나의 관계에 대해서도 듣게 된다. 이후 세츠나의 권유로 속박을 걸며 타계로 넘어다닐 수 있는 능력을 얻게 된다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h3" data-ke-size="size26"><span class="wiki-h3-icon"></span> <a name="목차3-6-1"></a><a href="#목차">3.6.1</a> 전생</h2>
+<table class="text1" style="border-collapse: collapse; width: 100%; border: 1px solid #dddddd;" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td style="width: 100%; border: 1px solid gray; border-top: 5px solid orange; padding: 12px;"><span style="font-size: 1.3em;">이 문서에</span> <a style="color: #0275d8; font-size: 1.3em;" href="https://namu.wiki/w/%EC%8A%A4%ED%8F%AC%EC%9D%BC%EB%9F%AC" target="_blank" rel="noopener">스포일러</a><span style="font-size: 1.3em;">가 포함되어 있습니다.</span><br /><br />이 문서가 설명하는 작품이나 인물 등에 대한 줄거리, 결말, 반전 요소 등을 직&middot;간접적으로 포함하고 있습니다.</td>
+</tr>
+</tbody>
+</table>
+<p class="text1" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">주령이 가득한 곳에서 잡아 먹히지 않고 살아있는 것이 신기해 단순한 호기심으로 스쿠나가 데려왔다. 부적이나 조복 없이도 주령을 길들일 수 있어&nbsp; 쓸모있는 전력이 될 것 같아 키우기 시작했다․ 스쿠나의 손에 자랐음에도 생명을 소중히 하는 모습을 보였다.<a name="돌아가기18"></a><a title="&lt;span id=&quot;docs-internal-guid-6aa11f85-7fff-280d-6a31-bbc1b93bfcf8&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;스쿠나의 강함을 알고 있으면서도 그를 걱정하거나 도우려는 모습을 보인다.&lt;/span&gt;&lt;/span&gt;" href="#각주18"><sup>[18]</sup></a><a name="돌아가기19"></a><a title="&lt;span id=&quot;docs-internal-guid-90809d9a-7fff-673f-a2f2-7446b7cfabac&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;&ldquo;스쿠나님도 사람이시 잖아요.&rdquo;&lt;/span&gt;&lt;/span&gt;" href="#각주19"><sup>[19]</sup></a></span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 주령을 길들이고 다룰 수 있었지만 몸의 내성은 매우 약했기에 그리 오래 살지는 못했다.</span></span></p>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">약한 생물을 질색이다.<a name="돌아가기20"></a><a title="전생의 하루카는 &lt;span id=&quot;docs-internal-guid-06c5b7eb-7fff-9e1d-d26b-f8076028d8ee&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;조용히 미소지으며 &lsquo;방금 제가 강하다고 인정해 주신 거죠?&rsquo; 묻고는 눈을 감는다.&lt;/span&gt;&lt;/span&gt;" href="#각주20"><sup>[20]</sup></a></span></span><hr data-ke-style="style1" /><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">전생의 와카우라가 죽기 직전 스쿠나가 한 말.<a name="돌아가기21"></a><a title="&lt;span id=&quot;docs-internal-guid-57ba6b96-7fff-6511-6d3b-c0682aad0eb2&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;툇마루에 앉아 스쿠나에게 기대어 죽음을 맞이했다.&lt;/span&gt;&lt;/span&gt;" href="#각주21"><sup>[21]</sup></a></span></span></td>
+</tr>
+</tbody>
+</table>
+<p class="text1" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">이름을 지어주거나<a name="돌아가기22"></a><a title="호노하穂花. 와카우라의 한국 이름에도 화&lt;span style=&quot;font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 13.3333px;&quot;&gt;花가 들어간다.&lt;/span&gt;" href="#각주22"><sup>[22]</sup></a> 자신의 곁에 오는 것을 내치지 않은 것을 보아 스쿠나가 조금이나마 아꼈던 것으로 보인다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차3-7"></a><a href="#목차">3.7</a> 사멸회유</h2>
+<p class="text1" data-ke-size="size16">본문 내용을 입력하세요.</p>
+</details><details open="">
+<h2 class="wiki-h1" data-ke-size="size26"><span class="wiki-h1-icon"></span> <a name="목차4-"></a><a href="#목차">4.</a> 능력과 기술</h2>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">하루카, 너는 가능성이 보이는 건 될 때까지 하려고 해서 말이야.</span></span><hr data-ke-style="style1" /><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">체술 훈련이 끝나고 녹초가 되어 쓰러진 와카우라를 향해 고죠가 한 말.</span></span></td>
+</tr>
+</tbody>
+</table>
+<p class="text1" data-ke-size="size16">근성이 높은 편.</p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차4-1"></a><a href="#목차">4.1</a> 체술</h2>
+<ul style="margin-top: 0px; margin-bottom: 0px; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="font-family: 'Nanum Gothic', sans-serif; list-style-type: disc; font-size: 10pt; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">체술</span></li>
 </ul>
-
-<h2 id="s3">3. 작중 행적</h2>
-
-<p>
-도쿄 도립 주술 고등전문학교에서 활동하는 주술사이다.
-</p>
-
+<p dir="ltr" style="line-height: 1.38; margin-left: 36pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">술식을 무효시킬 뿐이므로 근접전에서는 대부분 순수 본인의 전투력으로만 싸워야 한다. 때문에 고전에 들어간 이후로 한동안은 매일 저녁 체술 훈련을 했다.<a name="돌아가기23"></a><a title="&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;임무를 갔다 온 날에도 예외는 없었다고 한다. 저녁에 임무가 생겼을 때는 오전에 체술 훈련을 했다고.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주23"><sup>[23]</sup></a><a name="돌아가기24"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;술식을 최대한으로 사용하려면 체술은 기본이었기에 한동안 자잘한 상처들을 달고 다녔다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주24"><sup>[24]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #0275d8; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> </span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">교토고와의 교류전을 준비하는 동안은 하루 종일 체술 훈련을 했다고 해도 과언이 아니라고 한다.</span></span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차4-2"></a><a href="#목차">4.2</a> 기술</h2>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">부적</span></li>
+</ul>
+<p dir="ltr" style="line-height: 1.38; margin-left: 36pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">부모님께 받은 책을 통해 직접 만들고 있다. 현재는 피로를 최소화하거나 움직임을 막는 부적을 주로 사용한다. 정화 등의 효력을 가진 부적 또한 만들 수는 있지만 자신은 아직 완벽하게 만들지 못해 연습이 필요하다고 한다.</span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차4-3"></a><a href="#목차">4.3</a> 보유술식</h2>
+</details><details open="">
+<h2 class="wiki-h3" data-ke-size="size26"><span class="wiki-h3-icon"></span> <a name="목차4-3-1"></a><a href="#목차">4.3.1</a> 공간 무효화</h2>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"><span style="text-wrap-mode: nowrap;" class="Apple-tab-span"> </span></span><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"><span style="text-wrap-mode: nowrap;" class="Apple-tab-span"> </span> </span><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; くうかんむこうか</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">공간 무효화 (空間無効化)</span></li>
+</ul>
+<p dir="ltr" style="line-height: 1.38; margin-left: 36pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">임의의 공간을 정해 그 공간 안에서의 주력을 무효하는 술식이다. 주구, 주물, 주해는 이미 주력이 깃든 것이기 때문에&nbsp; 무효할 수 없지만 주력을 넣는 과정 또는 저주 그 자체인 주령은 무효할 수 있다. 모든 주력과 주령을 무효할 수 있는 것은 아닌 보인다.<a name="돌아가기25"></a><a title="스포일러: &lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;무효할 수 있는 주력의 양이 정해진 것이 아닌 계속 늘어나는 것으로 밝혀졌다. 술식을 사용하면 사용할수록 무효할 수 있는 양이 많아진다는 것. 발전 가능성이 높아 고죠와 훈련하는 경우가 많아졌다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주25"><sup>[25]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 무효되어 사라진 주력의 양은 회복이 가능하기는 하지만 시간이 걸린다<a name="돌아가기26"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;3, 4급의 경우 이틀 정도 주력을 사용할 수 없고, 2급의 경우 하루 동안 주력을 사용할 수 없다. 1급부터 특급은 길다면 2~3시간, 짧으면 당장에라도 주력을 회복할 수 있다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주26"><sup>[26]</sup></a><a name="돌아가기27"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;무효량이 많아지면서 1급의 주력을 반나절 동안 무효시킬 수 있게 되었다. 이 또한 발전 가능성이 높다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;" href="#각주27"><sup>[27]</sup></a></span></p>
+<p dir="ltr" style="line-height: 1.38; margin-left: 72pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;むこう</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: circle; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre; margin-left: 36pt;" aria-level="2"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">무효 (無効)</span></li>
+</ul>
+<p dir="ltr" style="line-height: 1.38; margin-left: 72pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">자신의 반경 5m<a name="돌아가기28"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;반경은 자유롭게 정할 수 있지만 범위가 넓어지는 만큼 무효량은 줄어든다. 현재는 5m가 최대.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주28"><sup>[28]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">안의 주력과 주령을 무효한다. 적군과 아군을 나눌 수 있는 것이 아니기 때문에 보통은 본인을 보호하거나 1대1로 싸우는 상황에서 사용한다. 주력을 사용한 공격에서 주력이 사라지도록 해 공격력을 약화할 수 있고 주령의 경우 3~4급은 무효를 통해 사라지게 할 수도 있다.</span></p>
+<p dir="ltr" style="line-height: 1.38; margin-left: 36pt; text-indent: 36pt; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;つい-かい</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: circle; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre; margin-left: 36pt;" aria-level="2"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">추회 ( 追 悔 )</span></li>
+</ul>
+<p dir="ltr" style="line-height: 1.38; margin-left: 72pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">공간이 아닌 대상을 정해서 무효하는 기술. 무효와 달리 대상이 정해져 있기 때문에 무효량이 더 많다. 보통 서포트 느낌으로 많이 사용한다. 다만 눈으로 계속 대상을 쫓아야 하므로 속도가 빠르거나 순간적인 이동을 주력 없이 해낼 수 있다면 술식이 풀리게 된다.<a name="돌아가기29"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;주령의 경우 주력을 통해 움직일 수 있던 것이라면 움직임이 둔해진다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;" href="#각주29"><sup>[29]</sup></a></span></p>
+<p dir="ltr" style="line-height: 1.38; margin-left: 72pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;まど</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: circle; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre; margin-left: 36pt;" aria-level="2"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">창문 ( 窓 )</span></li>
+</ul>
+<p dir="ltr" style="line-height: 1.38; margin-left: 72pt; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">무의식적으로 사용되어, 생득영역에 들어가지 못하고 튕겨져 나오게 되는 기술. 몸의 주력이 생득영역이라는 공간을 거부하여 들어가지 못하는 원리이다. 등급을 따지지 않고 튕겨 나오게 되지만 생득영역의 주인과 접촉하고 있는 상태에서는 들어갈 수 있다.<a name="돌아가기30"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;생득영역 안에서도 접촉의 계속하고 있어야 한다. 본인이 그 생득영역 안에 있는 것이 싫다면 영역 주인과의 접촉을 강제적이더라도 끊어내면 된다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;" href="#각주30"><sup>[30]</sup></a></span></p>
+<div>&nbsp;</div>
+</details><details open="">
+<h2 class="wiki-h3" data-ke-size="size26"><span class="wiki-h3-icon"></span> <a name="목차4-3-2"></a><a href="#목차">4.3.2</a> 영역 전개</h2>
+<table class="wiki-img-sing" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td style="border-color: #000000;"><img src="https://inadequate-sapphire-e3l7195g35.edgeone.app/스크린샷%202026-01-08%20194425.png" /></td>
+</tr>
+<tr>
+<td style="background-color: #000000; color: #ffffff; border-color: #000000; padding: 5px 10px; text-align: center; word-wrap: break-word; white-space: normal; vertical-align: top; line-height: 1.5;"><span><span style="font-size: 6pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">くうくうぜんにさつ</span></span><br /><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">空空全爾殺</span></span><br />
+<div><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"><span><span style="font-size: 11pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;"><b>공공전이살</b></span></span></span></div>
+<div><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">Empty Lotus<span><span style="font-size: 11pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;"><b></b></span></span></span></div>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">그래, 뭐가 길고 짧은지 한 번 해보자고.</span></span></td>
+</tr>
+</tbody>
+</table>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"><span style="background-color: transparent; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt;">&copy;'캐피'님. </span>의미는 아무것도 없이 온전한 너를 죽이다.<a name="돌아가기31"></a><a title="발음은 쿠우-쿠우-젠니사츠" href="#각주31"><sup>[31]</sup></a> 주술을 공부하며 읽었던 책 중 불교 수인에 대해 떠올리고 즉석으로 영역을 전개했다. 보통 서포트 형식으로 사용한 후 본인은 피해있는 식이다.</span></p>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">영역을 발동하면 대상의 발아래에서 대상을 집어삼켜 봉오리를 피운다.<a name="돌아가기32"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;대상의 발아래에 영역이 전개되기 때문에 대상이 공중에 있더라도 충분히 영역을 발동할 수 있다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주32"><sup>[32]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 그 안에서 자신의 주력을 대상에게 부어 술식이 대상을 주력 그 자체로 인식, 대상을 무효하며 연꽃이 개화한다. 3급은 충분히 무효시킬수 있고 2급 또한 주력을 최대한으로 사용한다면 무효시킬 수 있다. 1급 이상의 경우라도 짧게나마 발목을 잡을 수 있다. 일부러 주력을 조금만 사용하여 대상의 절반만을 무효시켜 전투 불능의 상태로 만들 수도 있다. 다만, 자신의 주력을 대상에게 퍼붓는 기술이기에 영역전개 후 주력 양이 눈에 띄게 줄어든다.<a name="돌아가기33"></a><a title="&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: rgb(0, 0, 0); font-family: &quot;Nanum Gothic&quot;, sans-serif; font-size: 10pt; white-space-collapse: preserve;&quot;&gt;전투 불능 상태에 가깝다.&lt;/span&gt;&lt;span style=&quot;background-color: transparent; font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;" href="#각주33"><sup>[33]</sup></a></span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"> 때문에 최후 중의 최후의 수로 사용한다.&nbsp;</span></p>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<p dir="ltr" style="line-height: 1.38; text-align: justify; margin-top: 0pt; margin-bottom: 0pt;" data-ke-size="size16"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">서술을 보면 알 수 있듯이 재생이 쉽고 빠른 주령보다는 인간에게 쓰는 것이 최소한의 주력으로 필살의 효과를 보기 쉽다. 그럼에도 아직 사람을 죽이는 것에는 거부감을 가지고 있어 자신의 소중한 사람들이 위협당하는 상황이 아니라면 사람에게는 쓰고 싶지 않다고 한다.</span></p>
+<table class="wiki-quote" data-ke-align="alignLeft">
+<tbody>
+<tr>
+<td class="text1" style="border-left: 5px solid #71bc6d;"><span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">&ldquo;목숨이라는 걸 가볍게 여기고 싶지 않아요. 물론, 그럴만한 배짱도 아직 없고요. 그럼에도 내 소중한 이들을 위해서라면&hellip; 뭐든 할 거에요.&rdquo;</span></span></td>
+</tr>
+</tbody>
+</table>
+<p class="text1" data-ke-size="size16"><span style="font-family: 'Nanum Gothic', sans-serif; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; white-space-collapse: preserve; background-color: transparent; font-size: 10pt; color: #000000; vertical-align: baseline;">영역 전개 시 수인은 금강합장이다<a name="돌아가기34"></a><a title="&lt;span id=&quot;docs-internal-guid-63427b81-7fff-21f2-b05d-718e2fc5d778&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;&quot;&gt;하루카의 술식은 하루카 그 자체로 이미 발동할 수 있지만 그것을 형상화하기 위해 매개체로 수인을 사용한다. 이론만 따진다면 수인 없이도 영역전개가 가능한 것.&lt;/span&gt;&lt;/span&gt;" href="#각주34"><sup>[34]</sup></a></span><span style="font-family: 'Nanum Gothic', sans-serif; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; white-space-collapse: preserve; background-color: transparent; font-size: 10pt; color: #000000; vertical-align: baseline;"> 왼손과 오른손을 견고하게 결하고 나서 모든 손가락을 교차하는 것.</span></p>
+</details><details open="">
+<h2 class="wiki-h2" data-ke-size="size26"><span class="wiki-h2-icon"></span> <a name="목차4-4"></a><a href="#목차">4.4</a> 전적</h2>
+<p class="text1" data-ke-size="size16"><span style="color: #212529; font-family: 'Pretendard JP', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans CJK KR', NanumBarunGothic, Roboto, 'Segoe UI', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif, emoji; font-size: 15px; background-color: #ffffff;">※ 승리의 기준은 상대의 전투 불능, 전의 상실, 패배 시인. 기타 등등<a name="돌아가기35"></a><a title="&lt;/span&gt;&lt;span id=&quot;docs-internal-guid-4d07fb9f-7fff-ba1f-5175-dfc11eb2e33c&quot;&gt;&lt;span style=&quot;font-size: 10pt; font-family: &quot;Nanum Gothic&quot;, sans-serif; color: rgb(0, 0, 0); background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;&quot;&gt;제대로 된 전투 경험이 없어 승률을 계산할 수 없다.&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;color: rgb(33, 37, 41); font-family: &quot;Pretendard JP&quot;, Pretendard, -apple-system, BlinkMacSystemFont, &quot;Apple SD Gothic Neo&quot;, &quot;Noto Sans KR&quot;, &quot;Noto Sans CJK KR&quot;, NanumBarunGothic, Roboto, &quot;Segoe UI&quot;, &quot;Malgun Gothic&quot;, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, sans-serif, emoji; font-size: 15px; background-color: rgb(255, 255, 255);&quot;&gt;" href="#각주35"><sup>[35]</sup></a></span></p>
+</details><details open="">
+<h2 class="wiki-h1" data-ke-size="size26"><span class="wiki-h1-icon"></span> <a name="목차5-"></a><a href="#목차">5.</a> 여담</h2>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">이타도리를 향해 나름 열심히 마음을 표현하고는 있지만 별 효과는 없는 것 같다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">1인칭은 <a href="https://namu.wiki/w/%EC%95%84%ED%83%80%EC%8B%9C" target="_blank" rel="noopener">아타시</a></span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">혼자 있을 때는 주술과 관련된 서적들을 읽으며 공부한다고 한다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">피곤하거나 놀랐을 때 한국어가 튀어나오기도 한다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">주술고전에 입학한 후에야 가족들이 주술과 관련된 일을 한다는 것을 알았다. 이후 여러 가지로 도움을 받으며 잘 지내고 있다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">스쿠나가 묘하게 자신에게는 유하게 군다는 것을 알고 있지만 여전히 혐오한다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">당신은 강아지파? 고양이파? 하는 질문에 고양이파<a name="돌아가기36"></a><a title="호랑이가 고양잇과이기 때문이라고 이타도리를 흘겨보고는 답했다." href="#각주36"><sup>[36]</sup></a>, 밥파? 빵파? 라는 질문에는 밥파<a name="돌아가기37"></a><a title="굳이 따지자면 밥보다는 떡을 더 좋아한다고 한다." href="#각주37"><sup>[37]</sup></a>라고 대답했다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">고죠와 마키에게 체술을 배우며, 가끔 이타도리, 후시구로와 대련하기도 한다. 아직은 그 누구도 이겨보지 못 해보았다.</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">이미지송은</span></li>
+</ul>
+<p class="text1" data-ke-size="size16"><span>&nbsp;</span></p>
+<ul style="margin-top: 0; margin-bottom: 0; padding-inline-start: 48px;" data-ke-list-type="disc">
+<li dir="ltr" style="list-style-type: disc; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space: pre;" aria-level="1"><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; text-wrap-mode: wrap;">겁이 많은 만큼 놀라는 모습이 자주 나온다.</span></li>
+</ul>
+</details>
+<div class="text1 wiki-footnote">
+<p data-ke-size="size16"><a name="각주1"></a><a href="#돌아가기1">[1]</a> 한국 이름은 임가화(任歌和 [노래 가 화할 화], Im Gahwa). 일본 이름의 성은 아버지의 성을 따랐다.</p>
+<p data-ke-size="size16"><a name="각주2"></a><a href="#돌아가기2">[2]</a> 돌아다니는 것을 좋아한다. (여행은 외)</p>
+<p data-ke-size="size16"><a name="각주3"></a><a href="#돌아가기3">[3]</a> 편식이 심하다.</p>
+<p data-ke-size="size16"><a name="각주4"></a><a href="#돌아가기4">[4]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">대화하며 험담하기보다는 혼자 중얼거리며 욕하는 것에 가깝다.</span></span></p>
+<p data-ke-size="size16"><a name="각주5"></a><a href="#돌아가기5">[5]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">할머니의 말이 일종의 저주가 된 셈이다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주6"></a><a href="#돌아가기6">[6]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">어머니의 반대가 제일 심해서 3일 밤낮을 설득한 후에야 허락받을 수 있었다.</span></span></p>
+<p data-ke-size="size16"><a name="각주7"></a><a href="#돌아가기7">[7]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">어머니는 공앙에 돌아가기 직전까지도 함께 한국에 돌아갈 것을 권유했다.</span></span></p>
+<p data-ke-size="size16"><a name="각주8"></a><a href="#돌아가기8">[8]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">겁이 많아 한동안 동아리 활동을 할 때는 돌처럼 뚝딱거릴 때가 많았다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주9"></a><a href="#돌아가기9">[9]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">일찍 하교하는 이유를 물었다가 함께 하게 되었다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주10"></a><a href="#돌아가기10">[10]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">처음 와스케의 병문안을 갔을 때는 무섭다고 생각했지만 찾아갈수록 다정한 사람이라는 것을 알게 되었다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주11"></a><a href="#돌아가기11">[11]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">이날 주술고전으로 돌아와 이타도리를 좋아하고 있다는 것을 쿠기사키에게 말한다.</span></span></p>
+<p data-ke-size="size16"><a name="각주12"></a><a href="#돌아가기12">[12]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">후시구로는 이미 눈치채고 있었다.</span></span></p>
+<p data-ke-size="size16"><a name="각주13"></a><a href="#돌아가기13">[13]</a> 애니메이<span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">에서는 이타도리와 스쿠나가 교차하며 나타났다 사라진다.</span></span></p>
+<p data-ke-size="size16"><a name="각주14"></a><a href="#돌아가기14">[14]</a> 쿠기사키에게 <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">너무하다며 자신을 보는 이타도리에게 &lsquo;그만하려고?&rsquo;라 물으며 싸하게 미소 짓는다.</span><span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주15"></a><a href="#돌아가기15">[15]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">혹시나 하는 마음으로 추회를 사용했던 것이 도움이 되었다.</span></span></p>
+<p data-ke-size="size16"><a name="각주16"></a><a href="#돌아가기16">[16]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">&lsquo;마음 단단히 먹어야 해, 어찌 되든 나는 하루카 편이니까!&rsquo;</span></span></p>
+<p data-ke-size="size16"><a name="각주17"></a><a href="#돌아가기17">[17]</a> 이타도리에게는 가벼운 길운이 담긴 부적이라고 했지만 사실은 이타도리의 위치를 빠르게 찾기 위해 자신의 주력을 담아둔 부적이었다.</p>
+<p data-ke-size="size16"><a name="각주18"></a><a href="#돌아가기18">[18]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">스쿠나의 강함을 알고 있으면서도 그를 걱정하거나 도우려는 모습을 보인다.</span></span></p>
+<p data-ke-size="size16"><a name="각주19"></a><a href="#돌아가기19">[19]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">&ldquo;스쿠나님도 사람이시 잖아요.&rdquo;</span></span></p>
+<p data-ke-size="size16"><a name="각주20"></a><a href="#돌아가기20">[20]</a> 전생의 하루카는 <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">조용히 미소지으며 &lsquo;방금 제가 강하다고 인정해 주신 거죠?&rsquo; 묻고는 눈을 감는다.</span></span></p>
+<p data-ke-size="size16"><a name="각주21"></a><a href="#돌아가기21">[21]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">툇마루에 앉아 스쿠나에게 기대어 죽음을 맞이했다.</span></span></p>
+<p data-ke-size="size16"><a name="각주22"></a><a href="#돌아가기22">[22]</a> 호노하穂花. 와카우라의 한국 이름에도 화<span style="font-family: 'Nanum Gothic', sans-serif; font-size: 13.3333px;">花가 들어간다.</span></p>
+<p data-ke-size="size16"><a name="각주23"></a><a href="#돌아가기23">[23]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">임무를 갔다 온 날에도 예외는 없었다고 한다. 저녁에 임무가 생겼을 때는 오전에 체술 훈련을 했다고.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주24"></a><a href="#돌아가기24">[24]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">술식을 최대한으로 사용하려면 체술은 기본이었기에 한동안 자잘한 상처들을 달고 다녔다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주25"></a><a href="#돌아가기25">[25]</a> 스포일러: <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">무효할 수 있는 주력의 양이 정해진 것이 아닌 계속 늘어나는 것으로 밝혀졌다. 술식을 사용하면 사용할수록 무효할 수 있는 양이 많아진다는 것. 발전 가능성이 높아 고죠와 훈련하는 경우가 많아졌다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주26"></a><a href="#돌아가기26">[26]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">3, 4급의 경우 이틀 정도 주력을 사용할 수 없고, 2급의 경우 하루 동안 주력을 사용할 수 없다. 1급부터 특급은 길다면 2~3시간, 짧으면 당장에라도 주력을 회복할 수 있다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주27"></a><a href="#돌아가기27">[27]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">무효량이 많아지면서 1급의 주력을 반나절 동안 무효시킬 수 있게 되었다. 이 또한 발전 가능성이 높다.</span><span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주28"></a><a href="#돌아가기28">[28]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">반경은 자유롭게 정할 수 있지만 범위가 넓어지는 만큼 무효량은 줄어든다. 현재는 5m가 최대.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주29"></a><a href="#돌아가기29">[29]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">주령의 경우 주력을 통해 움직일 수 있던 것이라면 움직임이 둔해진다.</span><span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주30"></a><a href="#돌아가기30">[30]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">생득영역 안에서도 접촉의 계속하고 있어야 한다. 본인이 그 생득영역 안에 있는 것이 싫다면 영역 주인과의 접촉을 강제적이더라도 끊어내면 된다.</span><span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주31"></a><a href="#돌아가기31">[31]</a> 발음은 쿠우-쿠우-젠니사츠</p>
+<p data-ke-size="size16"><a name="각주32"></a><a href="#돌아가기32">[32]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">대상의 발아래에 영역이 전개되기 때문에 대상이 공중에 있더라도 충분히 영역을 발동할 수 있다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주33"></a><a href="#돌아가기33">[33]</a> <span style="background-color: transparent; color: #000000; font-family: 'Nanum Gothic', sans-serif; font-size: 10pt; white-space-collapse: preserve;">전투 불능 상태에 가깝다.</span><span style="background-color: transparent; font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;"></span></p>
+<p data-ke-size="size16"><a name="각주34"></a><a href="#돌아가기34">[34]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline;">하루카의 술식은 하루카 그 자체로 이미 발동할 수 있지만 그것을 형상화하기 위해 매개체로 수인을 사용한다. 이론만 따진다면 수인 없이도 영역전개가 가능한 것.</span></span></p>
+<p data-ke-size="size16"><a name="각주35"></a><a href="#돌아가기35">[35]</a> <span><span style="font-size: 10pt; font-family: 'Nanum Gothic', sans-serif; color: #000000; background-color: transparent; font-variant-numeric: normal; font-variant-east-asian: normal; font-variant-alternates: normal; font-variant-position: normal; font-variant-emoji: normal; vertical-align: baseline; white-space-collapse: preserve;">제대로 된 전투 경험이 없어 승률을 계산할 수 없다.</span></span><span style="color: #212529; font-family: 'Pretendard JP', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Noto Sans CJK KR', NanumBarunGothic, Roboto, 'Segoe UI', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif, emoji; font-size: 15px; background-color: #ffffff;"></span></p>
+<p data-ke-size="size16"><a name="각주36"></a><a href="#돌아가기36">[36]</a> 호랑이가 고양잇과이기 때문이라고 이타도리를 흘겨보고는 답했다.</p>
+<p data-ke-size="size16"><a name="각주37"></a><a href="#돌아가기37">[37]</a> 굳이 따지자면 밥보다는 떡을 더 좋아한다고 한다.</p>
 </div>
-
-</body>
-</html>
+</div>
